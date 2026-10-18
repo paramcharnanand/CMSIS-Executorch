@@ -23,10 +23,12 @@ Charnanand, Arya Varia.
 | SW2 joystick | Select a profile and learn |
 | UART4 (115200 8N1) | One status line per second |
 
-The live Sentinel mode uses **statistical scoring on the M55 CPU**: under
-0.2 % of one core. It does **not** run ExecuTorch or the Ethos-U85 NPU. The
-pico-faces ExecuTorch/NPU code remains in the repository but is not linked in
-this mode.
+The live Sentinel mode uses **statistical scoring on the M55 CPU**. It does
+**not** run ExecuTorch or the Ethos-U85 NPU; the pico-faces ExecuTorch/NPU
+code remains in the repository but is not linked in this mode. The worst
+measured audio-block processing was 192 microseconds per 100 ms block (about
+0.19 % of that interval); this is not total CPU utilization, and power was
+not measured.
 
 ## How it works
 
@@ -65,10 +67,16 @@ this mode.
 ## What was demonstrated (2026-10-17/18, on the board)
 
 - Medium → high gave CHECK 2 s after the sound changed, and back gave OK,
-  repeatedly. An operator confirmed it on the LCD.
+  in the 2026-10-17 runs; an operator confirmed it on the LCD.
+- At the final demo location (2026-10-18): the first cycle gave ALERT because
+  the board had moved; two cycles after securing it gave sound-only CHECK
+  about 2 s after the first abnormal sound window. Recovery to OK was
+  confirmed on screen, but its exact time was not logged because the
+  laptop's serial link dropped.
 - Baselines saved to MRAM and reloaded after full power cycles.
 - 0 audio FIFO errors and 0 ring-full stops in every log.
-- About 0.2 ms of CPU per 100 ms audio block at worst.
+- Worst measured audio-block processing: 192 microseconds per 100 ms block
+  (about 0.19 % of that interval); not total CPU utilization.
 - Logs can be analysed offline with `tools/sentinel_log_report.py`.
 
 ## Main limitations

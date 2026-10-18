@@ -24,7 +24,7 @@ learned normal. It is not fault diagnosis, and its scoring is statistical
 |---|---|---|
 | Learn a normal state, store it in MRAM | Demonstrated | `SN PROFILE ... saved in MRAM` on every learn; LCD shows no save warning |
 | Baseline survives power-off | Demonstrated | Several full power cycles on 2026-10-17/18: boot report `saved baseline available`, then VERIFYING -> OK |
-| Fan medium -> high gives CHECK, back to medium gives OK | Demonstrated repeatedly on the current fan (and in earlier runs with a fan whose identity was not recorded) | CHECK 2 s after the sound changes in every logged cycle; operator confirmed the LCD |
+| Fan medium -> high gives CHECK, back to medium gives OK | Demonstrated repeatedly on the current fan (and in earlier runs with a fan whose identity was not recorded) | CHECK 2 s after the sound changes in every logged cycle (at the final location the first cycle went on to ALERT because the board had moved); operator confirmed the LCD |
 | Audio capture keeps up | Demonstrated | 0 FIFO errors, 0 ring-full stops in every status-only log |
 | Fan vibration detection | **Not demonstrated** | BMI323 driver gives about 50 Hz samples; fan speeds stay at the noise floor |
 | Phone vibration detection | **Inconclusive** | Sound changed during both trials; vibration flagged in one of two |
@@ -36,8 +36,8 @@ learned normal. It is not fault diagnosis, and its scoring is statistical
 | Quantity | Value | Source |
 |---|---|---|
 | Detection latency | 2 s from the first 1 s window above the threshold to CHECK (3-window rule); the first window itself can take up to 1 s | UART logs, `tools/sentinel_log_report.py` |
-| Recovery latency | about 2-3 s after the sound returns (3 windows below 2.5) | 2026-10-17/18 logs |
-| CPU per 100 ms audio block | median 88-130 us, worst 192 us (at most 0.19 % of one M55 core) | `blk_us` in the UART log |
+| Recovery latency | about 2-3 s after the sound returns (3 windows below 2.5) | 2026-10-17 logs; not logged at the final location (serial link dropped) |
+| CPU per 100 ms audio block | median 88-130 us, worst 192 us (about 0.19 % of the 100 ms interval; not total CPU utilization) | `blk_us` in the UART log |
 | CPU per 1 s window | median 2 us; about 21 ms once, when a learned baseline is written to MRAM and verified | `win_us` |
 | Audio | 2 x 16 kHz PDM, 4 x 100 ms ring (25.6 kB), interrupt driven | `mic_probe.c` |
 | Accelerometer | 50-52 new samples/s, about 99 % of reads new | `imu=` in the UART log |
@@ -47,8 +47,10 @@ learned normal. It is not fault diagnosis, and its scoring is statistical
 ## Why the CPU and not the NPU
 
 The workload is 32 k audio samples/s (2 x 16 kHz) of feature arithmetic,
-50 accelerometer reads/s and a few comparisons per second: under 0.2 % of
-the Cortex-M55. A model on the
+50 accelerometer reads/s and a few comparisons per second. The
+worst measured audio-block processing was 192 microseconds per 100 ms
+block (about 0.19 % of that interval); this is not total CPU utilization,
+and power was not measured. A model on the
 Ethos-U85 would add latency and memory without improving this scoring, and
 there is no labelled fault data to train one. The NPU (and the pico-faces
 ExecuTorch path) stays in the repository for workloads that need it, such as
@@ -136,11 +138,13 @@ Fan oscillation off, board beside the fan out of its airflow, positions
 marked, USB cable taped down. Raw logs and a summary are kept with the
 project backup.
 
-- Three cycles medium -> high -> medium. High gave CHECK 2 s after the sound
-  changed every time; the operator confirmed amber CHECK with `SOUND: CHANGED`
-  and green OK back on medium.
-- The return-to-OK time was not measured: the laptop's USB serial link dropped
-  at every high -> medium switch, without the board resetting.
+- First cycle medium -> high: ALERT (sound and vibration), because the board
+  had moved; it is not counted as a sound-only result.
+- Two cycles after securing the board: high gave sound-only amber CHECK
+  (`SOUND: CHANGED`) about 2 s after the first abnormal sound window.
+- Recovery to green OK on medium was confirmed on screen, but its exact time
+  was not logged: the laptop's USB serial link dropped at every
+  high -> medium switch, without the board resetting.
 - After a power cycle, FAN reloaded (`checking saved baseline`, VERIFYING,
   OK).
 - False alarms at medium, all cleared by themselves:
