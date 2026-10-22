@@ -87,6 +87,18 @@ not measured.
   (about 0.19 % of that interval); not total CPU utilization.
 - Logs can be analysed offline with `tools/sentinel_log_report.py`.
 
+## Run the host tests
+
+The MRAM profile store and the select/learn/save control path are tested on
+the host with a plain C compiler, no board needed:
+
+```
+cc -std=c11 -I tests/fakes tests/sentinel_profile_store_test.c -lm -o store_test && ./store_test
+cc -std=c11 -I tests/fakes tests/sentinel_profile_control_test.c -lm -o control_test && ./control_test
+```
+
+Each prints `PASS`.
+
 ## Main limitations
 
 - **Fault diagnosis:** not shown. It reports a *change* from the learned
