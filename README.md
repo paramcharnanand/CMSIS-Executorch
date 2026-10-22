@@ -1,16 +1,24 @@
 # Sentinel — learned "normal state" monitor on the Alif Ensemble E8
 
-Sentinel runs on the Alif Ensemble E8 DevKit. It learns how one machine
-normally sounds, keeps that baseline in on-chip MRAM, and shows on the LCD
-whether the machine still matches it.
+> Built at the **Arm × Alif Ensemble E8 Hackathon** (October 2026) by
+> **Param Charnanand** and **Arya Varia**.
 
-- **Demonstrated:** a desk fan changing from its learned medium speed to
-  high speed (CHECK), and back (OK).
+Sentinel is bare-metal firmware for the Alif Ensemble E8 DevKit that learns
+how one machine normally sounds and vibrates. It keeps that baseline in
+on-chip MRAM and shows on the LCD, live, whether the machine still matches
+it.
+
+- **Demonstrated on hardware:** a desk fan changing from its learned medium
+  speed to high speed (amber **CHECK** about 2 s after the sound changed), and
+  back (green **OK**). Baselines survive full power cycles.
 - **Not demonstrated:** fault diagnosis.
 
+**Tech:** C / C++ on Arm Cortex-M55 · CMSIS-Toolbox · Alif Ensemble DFP ·
+PDM microphones · BMI323 IMU over I3C · MIPI-DSI LCD · on-chip MRAM ·
+SEGGER J-Link · host unit tests in C · Python log analysis.
+
 Built on Arm's CMSIS-ExecuTorch pico-faces example (Apache-2.0). The original
-guide is in [docs/pico-faces-guide.md](docs/pico-faces-guide.md). Team: Param
-Charnanand, Arya Varia.
+guide is in [docs/pico-faces-guide.md](docs/pico-faces-guide.md).
 
 ## Hardware actually used (Cortex-M55 HP core)
 
