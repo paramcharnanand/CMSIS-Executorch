@@ -2,6 +2,8 @@
 
 > Built at the **Arm × Alif Ensemble E8 Hackathon** (October 2026) by
 > **Param Charnanand** and **Arya Varia**.
+>
+> **Also see:** [paramcharnanand/sentinel](https://github.com/paramcharnanand/sentinel) — the standalone Sentinel repo where it was developed during the hackathon.
 
 Sentinel is bare-metal firmware for the Alif Ensemble E8 DevKit that learns
 how one machine normally sounds and vibrates. It keeps that baseline in
